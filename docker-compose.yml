@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bookverse-postgres
+    environment:
+      POSTGRES_DB: bookverse
+      POSTGRES_USER: bookverse
+      POSTGRES_PASSWORD: bookverse123
+    volumes:
+      - bookverse-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bookverse -d bookverse"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: bookverse-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bookverse
+      SPRING_DATASOURCE_USERNAME: bookverse
+      SPRING_DATASOURCE_PASSWORD: bookverse123
+      SPRING_DATASOURCE_DRIVER: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      BOOKVERSE_H2_CONSOLE: "false"
+      BOOKVERSE_UPLOAD_ROOT: /app/uploads/covers
+    ports:
+      - "8080:8080"
+    volumes:
+      - bookverse-covers:/app/uploads/covers
+    restart: unless-stopped
+
+volumes:
+  bookverse-postgres-data:
+  bookverse-covers:
