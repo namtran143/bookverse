@@ -1,4 +1,4 @@
-# BookVerse - Bài 8
+# BookVerse 
 
 BookVerse là hệ thống Web API + Web Application quản lý sách điện tử, xây dựng bằng Java 17 và Spring Boot 3.
 
